@@ -175,6 +175,35 @@
       outline: 2px solid rgba(22,99,217,0.18);
     }
 
+    .github-notice {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 40px 0 18px;
+      padding: 16px 22px;
+      border-radius: 10px;
+      border: 1px solid rgba(22, 99, 217, 0.16);
+      background: linear-gradient(135deg, rgba(22, 99, 217, 0.06), rgba(18, 169, 140, 0.06));
+      color: var(--primary-dark);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .github-notice-icon {
+      flex-shrink: 0;
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(22, 99, 217, 0.10), rgba(18, 169, 140, 0.10));
+      font-size: 1.2rem;
+    }
+
+    .github-notice strong {
+      font-weight: 800;
+    }
+
     .action-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -634,6 +663,11 @@
         </div>
       </article>
     </section>
+
+    <div class="github-notice">
+      <span class="github-notice-icon">🔗</span>
+      <span>项目源码托管于 <strong>GitHub</strong>，国内网络访问可能不稳定，建议开启 VPN 后浏览。</span>
+    </div>
 
     <section class="action-grid" aria-label="项目源码和演示视频">
       <article class="action-card">
