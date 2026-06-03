@@ -96,20 +96,59 @@
       border-radius: 8px;
       background: #050813;
       box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+      min-height: 220px;
     }
 
-    video {
-      display: block;
-      width: 100%;
-      max-height: min(72vh, 760px);
-      background: #050813;
-      aspect-ratio: 16 / 9;
+    .player-icon {
+      font-size: 3.4rem;
+      margin-bottom: 14px;
+      opacity: 0.7;
+    }
+
+    .player-title {
+      margin: 0 0 10px;
+      color: var(--text);
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .player-desc {
+      margin: 0 0 22px;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .btn-watch {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 50px;
+      padding: 0 32px;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.05rem;
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      box-shadow: 0 12px 28px rgba(239, 68, 68, 0.30);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-watch:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 40px rgba(239, 68, 68, 0.38);
     }
 
     .hint {
       margin: 14px 0 0;
-      color: var(--muted);
-      font-size: 0.92rem;
+      color: #f97316;
+      font-size: 0.95rem;
+      font-weight: 700;
       line-height: 1.7;
       text-align: center;
     }
@@ -140,12 +179,6 @@
     .btn-source {
       color: #06111f;
       background: #fff;
-    }
-
-    .btn-domestic {
-      color: var(--text);
-      border: 1px solid rgba(25, 198, 165, 0.4);
-      background: rgba(25, 198, 165, 0.18);
     }
 
     .btn-home {
@@ -184,18 +217,17 @@
       <h1 id="video-title">基于Free RTOS的智能天气时钟</h1>
     </section>
 
-    <section class="player" aria-label="视频播放器">
-      <video id="project-video" controls playsinline preload="metadata">
-        <source id="project-video-source" src="weather_clock.mp4" type="video/mp4" />
-        当前浏览器无法播放这个视频，请确认视频为 H.264 编码的 MP4 文件。
-      </video>
+    <section class="player" aria-label="视频入口">
+      <div class="player-icon">▶</div>
+      <p class="player-title">演示视频已迁移至在线平台</p>
+      <p class="player-desc">点击下方按钮前往观看</p>
+      <a id="domestic-link" class="btn-watch" href="#" target="_blank" rel="noopener noreferrer">国内访问 ▶</a>
     </section>
 
-    <p class="hint">建议优先使用浏览器打开，若未使用 VPN 可能加载较慢，可选择“国内访问”。</p>
+    <p class="hint">本项目的演示视频仅支持国内平台访问，点击上方按钮即可观看。</p>
 
     <div class="actions">
       <a id="source-link" class="btn btn-source" href="https://github.com/laobanwang676-droid/HAL_stm32F4_RTOS_clock.git" target="_blank" rel="noopener noreferrer">查看源码</a>
-      <a id="domestic-link" class="btn btn-domestic" href="#">国内访问</a>
       <a class="btn btn-home" href="index.html">返回项目列表</a>
     </div>
   </main>
@@ -204,13 +236,11 @@
     const projects = {
       weather: {
         title: "基于Free RTOS的智能天气时钟",
-        video: "weather_clock.mp4",
         source: "https://github.com/laobanwang676-droid/HAL_stm32F4_RTOS_clock.git",
         domestic: "https://live.csdn.net/v/527847"
       },
       balance: {
         title: "多模态两轮自平衡系统",
-        video: "balance_car.mp4",
         source: "https://github.com/laobanwang676-droid/HAL_stm32f103c8t6_BCar.git",
         domestic: "https://live.csdn.net/v/527845"
       }
@@ -219,16 +249,12 @@
     const params = new URLSearchParams(window.location.search);
     const projectKey = params.get("project") || "weather";
     const project = projects[projectKey] || projects.weather;
-    const video = document.getElementById("project-video");
-    const source = document.getElementById("project-video-source");
     const domesticLink = document.getElementById("domestic-link");
 
     document.title = `${project.title} - 项目演示视频`;
     document.getElementById("video-title").textContent = project.title;
     document.getElementById("source-link").href = project.source;
     domesticLink.href = project.domestic;
-    source.src = project.video;
-    video.load();
   </script>
 </body>
 </html>
