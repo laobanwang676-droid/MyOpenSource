@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>果冻的开源网站</title>
+  <style>
+    :root {
+      --bg: #f7f9fc;
+      --text: #172033;
+      --muted: #647084;
+      --line: #dfe6ef;
+      --panel: rgba(255, 255, 255, 0.9);
+      --primary: #1663d9;
+      --primary-dark: #0d47a1;
+      --accent: #12a98c;
+      --ink: #101828;
+      --shadow: 0 18px 46px rgba(28, 39, 60, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 10%, rgba(18, 169, 140, 0.14), transparent 28%),
+        radial-gradient(circle at 86% 6%, rgba(22, 99, 217, 0.13), transparent 30%),
+        linear-gradient(180deg, #ffffff 0%, var(--bg) 48%, #eef3f7 100%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .site-shell {
+      width: min(1120px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 36px 0 56px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 0 42px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border-radius: 12px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      box-shadow: 0 10px 24px rgba(22, 99, 217, 0.28);
+    }
+
+    .brand span:last-child {
+      font-size: 1.02rem;
+    }
+
+    .hero {
+      display: flex;
+      justify-content: center;
+      padding: 44px 0 68px;
+      text-align: center;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-copy {
+      width: min(820px, 100%);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      margin: 0 0 18px;
+      color: var(--primary-dark);
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+
+    .eyebrow::before,
+    .eyebrow::after {
+      content: "";
+      width: 34px;
+      height: 2px;
+      background: var(--accent);
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(2.35rem, 7vw, 5.6rem);
+      line-height: 1.04;
+      letter-spacing: 0;
+    }
+
+    .hero-subtitle {
+      margin: 22px auto 0;
+      max-width: 680px;
+      color: var(--muted);
+      font-size: 1.1rem;
+      line-height: 1.8;
+    }
+
+    .projects {
+      padding-top: 12px;
+    }
+
+    .project-section {
+      padding: 34px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .project-section h2 {
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(1.55rem, 3vw, 2.25rem);
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .project-summary {
+      min-height: 34px;
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+
+    /* 折叠/展开简介样式 */
+    .summary-container {
+      overflow: hidden;
+      transition: max-height 0.32s ease;
+    }
+
+    .summary-container.collapsed {
+      /* 基于当前字体与行高，限制到 3 行可见 */
+      max-height: calc(1rem * 1.8 * 3);
+    }
+
+    .summary-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(100,112,132,0.12);
+      background: linear-gradient(135deg, rgba(22,99,217,0.06), rgba(18,169,140,0.06));
+      color: var(--primary-dark);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .summary-toggle:focus {
+      outline: 2px solid rgba(22,99,217,0.18);
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+      margin-top: 32px;
+    }
+
+    .action-card {
+      border: 1px solid rgba(100, 112, 132, 0.2);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    }
+
+    .action-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(22, 99, 217, 0.28);
+      box-shadow: 0 24px 56px rgba(28, 39, 60, 0.15);
+    }
+
+    .card-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      color: var(--primary-dark);
+      font-size: 0.88rem;
+      font-weight: 800;
+    }
+
+    .card-kicker::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 5px rgba(18, 169, 140, 0.12);
+    }
+
+    .card-body h3 {
+      margin: 0 0 22px;
+      color: var(--ink);
+      font-size: 1.28rem;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 16px;
+      border-radius: 8px;
+      font-weight: 800;
+      line-height: 1.2;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-source {
+      color: #fff;
+      background: var(--ink);
+      box-shadow: 0 10px 22px rgba(16, 24, 40, 0.18);
+    }
+
+    .btn-source:hover {
+      background: #263244;
+    }
+
+    .btn-video {
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      box-shadow: 0 10px 22px rgba(22, 99, 217, 0.22);
+    }
+
+    footer {
+      padding: 36px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      .action-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .site-shell {
+        width: min(100% - 24px, 1120px);
+        padding-top: 22px;
+      }
+
+      .topbar {
+        padding-bottom: 24px;
+      }
+
+      .hero {
+        padding: 34px 0 52px;
+      }
+
+      .button-row {
+        grid-template-columns: 1fr;
+      }
+
+      .action-card {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="site-shell">
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="果冻的开源网站首页">
+        <span class="brand-mark">果</span>
+        <span>果冻的开源网站</span>
+      </a>
+    </header>
+
+    <section class="hero" aria-labelledby="site-title">
+      <div class="hero-copy">
+        <p class="eyebrow">Open Source Projects</p>
+        <h1 id="site-title">果冻的开源网站</h1>
+        <p class="hero-subtitle">
+          这里整理展示果冻的开源项目、源码仓库和演示视频，方便快速了解每个项目的功能与运行效果。
+        </p>
+      </div>
+    </section>
+
+    <section class="projects" aria-label="项目介绍">
+      <article class="project-section">
+        <h2>基于RT-Thread的多串锂电池管理系统(BMS)</h2>
+        <div class="project-summary">
+          <div class="summary-container collapsed">
+          <h3>一、项目概述</h3>
+          <p>本项目是一款专业化多节锂电池底层管理系统（BMS），以 STM32F103C8T6 为主控核心，搭配 BQ76920 电池前端芯片，基于 RT-Thread 实时操作系统开发。系统采用分层解耦架构与多线程实时调度，集成高精度电量估算、硬件级快速保护、被动均衡控制与 FinSH 命令行交互功能，完整实现锂电池包的状态监测、安全防护、电量管理与通信交互需求，是工业级电池管理场景的嵌入式综合解决方案。软件架构采用简易 AUTOSAR 分层设计，按 ASW、RTE、BSW 三层实现底层硬件与上层业务逻辑的解耦与集成；同时搭建 STM32F103 固件的 CMake + ARM GCC 构建体系，替代 Keil 完成编译、烧录与在线调试流程，并集成 OpenOCD、ST-Link 和 VS Code Cortex-Debug，提升跨平台开发、自动化构建和调试效率；同时集成 CAN 通信功能，支持 BMS 状态上报，以及电芯电压、温度数据的请求/响应交互。</p>
+          <h3>二、硬件与技术栈</h3>
+          <p><strong>核心硬件</strong></p>
+          <ul>
+            <li><strong>主控芯片：</strong>STM32F103C8T6（ARM Cortex-M3 内核，高性价比工业级主控）</li>
+            <li><strong>电池前端芯片：</strong>BQ76920（多节锂电池电压采集、硬件保护核心芯片）</li>
+            <li><strong>功能电路：</strong>锂电池被动均衡电路、硬件过流 / 短路保护电路</li>
+            <li><strong>交互接口：</strong>UART 串口（FinSH 命令行调试、数据交互）、CAN 总线（BMS 数据通信）</li>
+          </ul>
+
+          <p><strong>核心技术</strong></p>
+          <ul>
+            <li>操作系统：RT-Thread（多线程调度、IPC 进程间通信）</li>
+            <li>开发库：STM32 标准库</li>
+            <li>构建体系：CMake + ARM GCC 交叉编译工具链，替代 Keil 工程完成 STM32F103 固件编译与产物生成</li>
+            <li>烧录调试：OpenOCD + ST-Link + VS Code Cortex-Debug，实现一键烧录、断点调试、变量观察与寄存器查看</li>
+            <li>通信协议：I2C（与 BQ76920 通信）、UART 串口、CAN（状态上报与数据请求/响应）</li>
+            <li>核心机制：互斥锁、信号量、软件定时器、环形缓冲区</li>
+            <li>交互工具：RT-Thread FinSH 命令行控制台</li>
+          </ul>
+
+          <h3>三、系统架构与核心机制</h3>
+          <p>系统采用 ASW-RTE-BSW 三层软件架构，实现底层硬件驱动、中间件接口与上层业务逻辑的完全解耦，具备极强的可维护性与扩展性。基于 RT-Thread 实时操作系统，将系统拆解为采集、保护、分析、均衡、信息交互5 个独立线程，通过优先级调度实现并行运行；采用互斥锁解决多线程共享 I2C 总线、采集数据的竞态问题，通过信号量实现线程同步与中断唤醒；依托 BQ76920 硬件特性 + 外部中断，实现毫秒级硬件断电保护；结合开路电压法、安时积分法与温度补偿算法，完成高精度 SOC 估算；通过软件定时器精准控制被动均衡时序，提升均衡效率。</p>
+
+          <h3>四、核心功能</h3>
+          <ul>
+            <li>多节锂电状态采集：通过 BQ76920 实时采集电池单体电压、温度、总电流等核心参数；</li>
+            <li>高精度 SOC 估算：开路电压法校准初始电量，安时积分法 + 温度补偿实时计算剩余电量；</li>
+            <li>硬件级安全保护：毫秒级响应短路、过流、过压、欠压等异常，实现硬件快速断电保护；</li>
+            <li>智能被动均衡：软件定时器控制均衡时序，自动修复单体电压差异，提升电池一致性；</li>
+            <li>FinSH 命令交互：支持串口命令行实时查询电池状态、配置保护参数、调试系统；</li>
+            <li>开源构建调试：基于 CMake + ARM GCC 编译 STM32F103 固件，配合 OpenOCD、ST-Link 与 Cortex-Debug 完成烧录和在线调试；</li>
+            <li>CAN 通信交互：支持 BMS 状态上报，以及电芯电压、温度数据的请求/响应；</li>
+            <li>实时状态监控：全维度监测电池运行状态，异常状态实时上报与处理。</li>
+          </ul>
+
+          <h3>五、关键难点与解决方案</h3>
+          <p><strong>传统 Keil 工程依赖与调试流程不够开放问题</strong><br>
+          难点：Keil 工程在跨平台协作、自动化构建和 VS Code 调试集成方面受限，不利于开源项目维护与持续迭代；<br>
+          解决方案：搭建 CMake + ARM GCC 构建体系，统一管理启动文件、链接脚本、编译参数和模块依赖；集成 OpenOCD、ST-Link 与 VS Code Cortex-Debug，实现命令行编译、固件烧录、断点单步、变量观察和寄存器调试，替代 Keil 完成完整开发闭环。</p>
+
+          <p><strong>外设并发与 CPU 开销过高问题</strong><br>
+          难点：FinSH 命令行高频读取数据，采用轮询方式占用大量 CPU 资源，影响系统实时性；<br>
+          解决方案：设计硬件中断 + 环形缓冲区 + 信号量通信机制，线程阻塞等待信号量唤醒，彻底消除 CPU 轮询开销，实现数据无丢失、低功耗运行。</p>
+
+          <p><strong>多线程数据竞态与资源冲突问题</strong><br>
+          难点：采集、分析、均衡等任务共享 I2C 总线与底层采集数据，易引发数据错乱、时序异常；<br>
+          解决方案：采用互斥锁同步机制，对共享资源与公共数据进行互斥访问保护，保证多线程并发场景下的数据安全性与业务逻辑稳定性。</p>
+
+          <h3>六、项目亮点</h3>
+          <ul>
+            <li>分层架构设计：ASW-RTE-BSW 三层解耦，代码模块化程度高，便于调试、移植与功能扩展；</li>
+            <li>实时性极强：RT-Thread 多线程调度，硬件保护毫秒级响应，满足工业电池管理严苛要求；</li>
+            <li>高精度电量算法：OCV + 安时积分 + 温度补偿融合算法，SOC 估算精度高、稳定性强；</li>
+            <li>开源工具链开发：CMake + ARM GCC 替代 Keil，配合 OpenOCD、ST-Link、Cortex-Debug 打通编译、烧录与在线调试流程；</li>
+            <li>低功耗优化：中断唤醒替代轮询，大幅降低 CPU 无用开销，适配电池供电场景；</li>
+            <li>线程安全可靠：互斥锁、信号量保障多任务稳定运行，无数据冲突、无系统死机；</li>
+            <li>调试交互便捷：集成 FinSH 命令行，支持实时参数配置与状态查询，开发维护效率高。</li>
+          </ul>
+
+          <h3>七、应用场景</h3>
+          <p>本系统可广泛应用于电动工具电池包、便携式储能电源、工业锂电模组、小型新能源设备、锂电池教学实训平台等场景，是嵌入式 RTOS 开发、电池管理算法、硬件保护电路、多线程并发编程的综合实践项目。</p>
+          </div>
+          <button class="summary-toggle" aria-expanded="false">项目介绍 ▾</button>
+        </div>
+      </article>
+      <article class="project-section">
+        <h2>边缘 AI 的低功耗智能健康监护穿戴设备</h2>
+        <div class="project-summary">
+          <div class="summary-container collapsed">
+          <h3>一、项目概述</h3>
+          <p>本项目以STM32U575VGT6低功耗主控芯片为核心，搭载 FreeRTOS 实时操作系统，打造一款面向健康监护场景的便携式可穿戴设备。系统深度融合边缘 AI 推理、多体征传感器采集、4G 无线通信、GPS 定位、远程 OTA 升级等核心技术，实现跌倒智能检测、心率血氧实时监测、低电量提醒、紧急告警、定位上报、云端数据互联等一体化功能。设备采用极致低功耗设计搭配流畅触控界面，兼顾长时间续航与良好人机体验，是集合嵌入式低功耗开发、边缘 AI 运算、物联网通信、固件升级技术于一体的综合性智能硬件项目。</p>
+
+          <h3>二、硬件平台</h3>
+          <ul>
+            <li><strong>主控芯片：</strong>STM32U575VGT6，Cortex-M33 内核，具备优异低功耗特性，满足边缘计算运行需求</li>
+            <li><strong>姿态采集：</strong>SC7A20H 三轴加速度计，负责人体运动姿态原始数据采集</li>
+            <li><strong>体征检测：</strong>MAX30102 心率血氧传感器，精准采集人体心率、血氧饱和度参数</li>
+            <li><strong>定位模块：</strong>ATGM336H GPS 定位模组，实现户外精准位置获取</li>
+            <li><strong>无线通信：</strong>Air780E 4G 模块，承担数据上传、短信告警、远程 OTA 通信任务</li>
+            <li><strong>人机交互：</strong>电阻触摸屏 + 液晶显示屏，基于 LVGL 实现可视化界面操作</li>
+            <li><strong>电源管控：</strong>NMOS 低端开关电路，按需通断外设供电；搭载电量检测电路</li>
+            <li><strong>存储介质：</strong>片内 Flash，用于本地配置数据持久化保存</li>
+          </ul>
+
+          <h3>三、核心技术与运行机制</h3>
+          <p><strong>1. 操作系统与任务调度</strong><br>
+          基于 FreeRTOS 实现多任务并行管理，通过互斥锁、消息队列解决多任务资源竞态与程序阻塞问题，稳定调度体征采集、AI 跌倒判别、网络上传、界面刷新、电量监测等任务，保障系统实时响应。</p>
+
+          <p><strong>2. 边缘 AI 跌倒检测</strong><br>
+          SC7A20H 三轴加速度计不间断采集运动数据，提取轻量化统计特征与峰值特征；依托小型全连接神经网络完成行为判别，同时结合瞬时加速度差分尖峰阈值做联合决策，有效提升跌倒识别准确率，适配嵌入式设备算力与功耗限制。</p>
+
+          <p><strong>3. 物联网数据交互</strong><br>
+          整合 ATGM336H 定位模块与 Air780E 4G 模组，采集到的心率血氧、定位坐标数据，通过 MQTT 协议上传至 OneNET 云平台；设备判定跌倒险情后，自动发送告警短信并同步位置信息至紧急联系人，实现远程监护预警。</p>
+
+          <p><strong>4. 高性能触控界面</strong><br>
+          采用 LVGL 图形框架搭建多页面交互系统，涵盖主页、血氧检测、GPS 定位、联系人设置、摔倒提醒、OTA 升级确认六大功能界面。运用分散加载技术，将 LVGL 核心渲染程序、高频运算函数重定位至 SRAM 中运行，有效提升界面刷新速度与图形操作流畅度。</p>
+
+          <p><strong>5. 安全远程 OTA 升级</strong><br>
+          借助 HTTP 通信协议实现设备在线固件更新，升级文件通过 MD5 算法完整性校验，规避固件损坏导致设备无法正常工作的风险，方便后期功能迭代维护。</p>
+
+          <p><strong>6. 本地数据持久化</strong><br>
+          利用芯片片内 Flash 读写存储紧急联系人号码，支持触摸屏自定义编辑保存参数，解决设备重启后配置丢失的问题。</p>
+
+          <p><strong>7. 低功耗与电量管理</strong><br>
+          通过 NMOS 低端开关按需切断闲置外设供电，搭配一键息屏、点击亮屏的节能策略缩减待机损耗；实时检测设备剩余电量，界面直观展示电量状态，电量低于阈值时自动触发低电量报警提示。</p>
+
+          <h3>四、核心功能</h3>
+          <ul>
+            <li>生命体征监测：MAX30102 传感器实时采集心率、血氧数据，本地显示并同步上传云端存档</li>
+            <li>边缘 AI 跌倒检测：多算法联合判定人体跌倒动作，识别灵敏、误判率低</li>
+            <li>定位与紧急告警：ATGM336H 获取精准位置，险情发生后 4G 模块推送短信与定位信息</li>
+            <li>云端数据互通：MQTT 协议对接 OneNET 云平台，支持远程查看历史监测数据</li>
+            <li>触控人机交互：多场景功能页面自由切换，支持参数自定义配置操作</li>
+            <li>安全 OTA 升级：远程更新设备固件，MD5校验 + 回滚双重机制保障升级稳定</li>
+            <li>本地配置存储：联系人信息断电不丢失，可随时触屏修改保存</li>
+            <li>智能功耗控制：外设智能断电、屏幕息屏节能，延长设备使用时长</li>
+            <li>电量监测报警：实时显示剩余电量，电量不足时触发本地低电量警示</li>
+          </ul>
+
+          <h3>五、关键难点与解决方案</h3>
+          <p><strong>设备功耗偏高，难以满足穿戴设备续航要求</strong><br>
+          难点：传感器、4G、GPS 外设长期通电，待机损耗大；解决方案：采用 NMOS 低端开关单独管控外设供电，闲置设备自动断电；增设息屏唤醒功能，最大程度降低待机功耗。</p>
+
+          <p><strong>用户配置无法保存，重启后联系人参数重置</strong><br>
+          难点：断电后自定义号码丢失，每次开机需重新设置；解决方案：读写片内 Flash 完成数据持久化，触屏编辑后自动保存配置，断电重启数据不丢失。</p>
+
+          <p><strong>多任务并发引发资源争夺、程序卡顿阻塞</strong><br>
+          难点：数据采集、AI 运算、网络传输、界面刷新同步运行，易出现数据错乱；解决方案：使用 FreeRTOS 互斥锁管控共享资源，依靠消息队列完成任务间数据传递，规避竞态问题。</p>
+
+          <p><strong>图形界面刷新缓慢，触控交互存在延迟</strong><br>
+          难点：Flash 中运行图形渲染代码运行效率偏低；解决方案：采用分散加载方式，将高频执行的界面渲染函数迁移至 SRAM 运行，大幅提升界面流畅度。</p>
+
+          <p><strong>电池电量状态无法直观把控，低电量易突发断电</strong><br>
+          难点：无法实时获知剩余电量，电量耗尽影响设备正常监护；解决方案：增加电量检测电路，界面实时展示电量百分比，到达临界值主动发出低电量报警提醒。</p>
+
+          <h3>六、项目亮点</h3>
+          <ul>
+            <li>低功耗穿戴级设计：STM32U5 低功耗主控搭配智能电源管控，续航表现优异，适配日常穿戴使用</li>
+            <li>端侧 AI 实用落地：轻量化神经网络结合阈值判定，本地完成跌倒识别，无需依赖云端运算</li>
+            <li>全链路物联网体系：Air780E+ATGM336H 模组搭配 MQTT 云平台，实现监测、定位、告警全流程远程联动</li>
+            <li>可靠固件迭代方案：HTTP 远程升级搭配 MD5 校验，保障设备后期维护安全稳定</li>
+            <li>高性能图形交互：SRAM 加速界面渲染，嵌入式设备实现顺滑触控操作体验</li>
+            <li>系统运行稳定可靠：RTOS 任务调度配合通信同步机制，多任务运行无死机、数据无异常</li>
+            <li>完备状态监测体系：兼具体征监测、运动判别、电量预警，全方位守护使用安全</li>
+          </ul>
+
+          <h3>七、应用场景</h3>
+          <p>本项目适用于独居老人健康监护、儿童出行防护、慢性病日常监测、个人随身安全防护等场景，全面覆盖低功耗单片机开发、边缘 AI 算法、4G 物联网通信、GPS 定位、RTOS 操作系统、LVGL 图形开发、固件 OTA 升级等多项嵌入式核心技术，具备较高实战与项目实践价值。</p>
+          </div>
+          <button class="summary-toggle" aria-expanded="false">项目介绍 ▾</button>
+        </div>
+      </article>
+      <article class="project-section">
+        <h2>基于FreeRTOS的智能天气时钟</h2>
+        <div class="project-summary">
+          <div class="summary-container collapsed">
+          <h3>一、项目概述</h3>
+          <p>本项目是一款多功能嵌入式智能终端系统，以 STM32F407VET6 为主控核心，搭载 FreeRTOS 实时操作系统实现多任务协同运行，系统兼容 STM32 标准库与 HAL 库双版本开发，具备极强的可移植性与维护性。系统深度融合环境感知、网络数据交互、语音智能交互、实时报警与可视化人机交互等核心能力，实现了从数据采集、网络通信到智能响应、本地显示的全流程闭环，是一套完整的嵌入式综合应用解决方案。</p>
+
+          <h3>二、硬件与技术栈</h3>
+          <p><strong>核心硬件</strong></p>
+        <script>
+          // 折叠/展开项目介绍脚本
+          document.addEventListener('DOMContentLoaded', function () {
+            function toggleHandler(e) {
+              const btn = e.currentTarget;
+              const container = btn.previousElementSibling; // summary-container
+              if (!container) return;
+              const expanded = btn.getAttribute('aria-expanded') === 'true';
+              if (expanded) {
+                container.classList.add('collapsed');
+                btn.setAttribute('aria-expanded', 'false');
+                btn.textContent = '项目介绍 ▾';
+              } else {
+                container.classList.remove('collapsed');
+                btn.setAttribute('aria-expanded', 'true');
+                btn.textContent = '收起 ▴';
+              }
+            }
+
+            document.querySelectorAll('.summary-toggle').forEach(btn => {
+              btn.addEventListener('click', toggleHandler);
+            });
+          });
+        </script>
+          <ul>
+            <li><strong>主控芯片：</strong>STM32F407VET6（高性能 ARM Cortex-M4 内核）</li>
+            <li><strong>通信模块：</strong>ESP32C3 模块（WiFi 联网、网络数据获取）</li>
+            <li><strong>传感模块：</strong>AHT20 I2C 接口温湿度传感器</li>
+            <li><strong>显示模块：</strong>ST7789 LCD 显示屏（SPI 接口 + DMA 传输）</li>
+            <li><strong>交互模块：</strong>SU03T语音识别 / LU6288播报模块、物理按键</li>
+          </ul>
+
+          <p><strong>核心技术</strong></p>
+          <ul>
+            <li>操作系统：FreeRTOS（任务调度、进程间通信）</li>
+            <li>驱动框架：LVGL 嵌入式图形库</li>
+            <li>通信协议：UART 串口、I2C、SPI、DMA</li>
+            <li>软件兼容：STM32 标准库 / HAL 库双版本支持</li>
+          </ul>
+
+          <h3>三、系统架构与核心机制</h3>
+          <p>系统采用FreeRTOS 多任务架构设计，通过精细化的任务调度实现各功能模块并行运行；依托队列、信号量等 IPC 机制完成任务间数据同步与资源互斥访问，保障系统实时性与稳定性。主控通过UART 串口与 ESP32 通信，结合串口中断接收 + 指令校验机制，确保天气数据、网络时间等网络信息的精准获取；通过I2C 协议与温湿度传感器通信，实现环境数据实时采集；采用LVGL 图形框架驱动 LCD，搭配SPI+DMA数据传输方式，大幅提升屏幕刷新效率，降低 CPU 占用率；支持按键配网、语音识别、阈值报警等智能化交互逻辑，打造一体化智能体验。</p>
+
+          <h3>四、核心功能</h3>
+          <ul>
+            <li>智能环境监测：实时采集环境温湿度数据，支持自定义阈值，触发声光 / 界面智能报警；</li>
+            <li>WiFi 网络交互：按键快速配网，通过 ESP32 获取公网天气数据、网络标准时间；</li>
+            <li>语音智能交互：支持语音指令识别，可播报温湿度、天气、网络时间等信息；</li>
+            <li>LVGL 人机交互：可视化界面实时展示环境数据、网络状态、报警信息，操作便捷；</li>
+            <li>高可靠通信：串口指令校验、数据容错处理，保障模块间通信稳定可靠。</li>
+          </ul>
+
+          <h3>五、关键难点与解决方案</h3>
+          <p><strong>LCD 多任务数据显示竞态问题</strong><br>
+          难点：多个任务同时操作显示屏，易出现数据错乱、显示异常；<br>
+          解决方案：采用 FreeRTOS 队列作为数据传输中介，统一管理显示数据，避免多任务资源竞争，保证显示流畅性与数据准确性。</p>
+
+          <p><strong>串口数据接收可靠性问题</strong><br>
+          难点：ESP32 高频数据传输易出现丢包、误码；<br>
+          解决方案：使用串口中断接收数据，搭配指令校验机制，确保网络数据解析精准。</p>
+
+          <p><strong>多外设资源冲突问题</strong><br>
+          难点：传感器、WiFi、显示屏、语音模块共用系统资源；<br>
+          解决方案：通过信号量实现资源互斥访问，FreeRTOS 优先级调度保障核心任务优先执行。</p>
+
+          <h3>六、项目亮点</h3>
+          <ul>
+            <li>双库兼容设计：同时支持标准库与 HAL 库开发，适配不同开发习惯与移植需求；</li>
+            <li>实时性强：基于 FreeRTOS 的多任务架构，响应速度快、系统稳定性高；</li>
+            <li>高效显示：SPI+DMA+LVGL 组合，实现高帧率、低功耗的人机界面；</li>
+            <li>功能模块化：各功能解耦设计，便于二次开发、功能扩展与调试维护；</li>
+            <li>全场景交互：融合按键、语音、可视化界面，打造沉浸式智能交互体验。</li>
+          </ul>
+
+          <h3>七、应用场景</h3>
+          <p>本系统可广泛应用于智能家居环境监测、室内智能终端、嵌入式教学实训、工业环境监控节点等场景，是嵌入式 RTOS 开发、外设驱动、通信协议、人机交互等技术的综合实践项目。</p>
+          </div>
+          <button class="summary-toggle" aria-expanded="false">项目介绍 ▾</button>
+        </div>
+      </article>
+
+      <article class="project-section">
+        <h2>多模态两轮自平衡系统</h2>
+        <div class="project-summary">
+          <div class="summary-container collapsed">
+          <h3>一、项目概述</h3>
+          <p>本项目以STM32F103C8T6为主控芯片，采用标准库与 HAL 库双版本工程开发，打造一款高性能两轮自平衡智能小车。系统融合姿态闭环平衡、自主循迹、智能避障、蓝牙远程操控四大核心功能，通过多传感器数据融合与高精度闭环控制算法，实现稳定的自主运行与远程交互，是嵌入式控制、传感器融合、运动控制算法的综合实践项目。</p>
+
+          <h3>二、硬件平台</h3>
+          <ul>
+            <li><strong>主控芯片：</strong>STM32F103C8T6（ARM Cortex-M3 内核，高性能低成本）</li>
+            <li><strong>姿态传感器：</strong>MPU6050（六轴陀螺仪 + 加速度计，用于姿态解算）</li>
+            <li><strong>执行机构：</strong>双路 520 直流减速电机，驱动小车运动与平衡</li>
+            <li><strong>显示模块：</strong>0.96 寸 OLED 显示屏，实时显示小车姿态、运行模式、传感器数据</li>
+            <li><strong>通信模块：</strong>蓝牙串口模块，实现手机 APP 远程无线操控</li>
+            <li><strong>环境传感器：</strong>HC-SR04 超声波模块、五路红外循迹模块</li>
+            <li><strong>保护机制：</strong>倒地检测、过流保护、扶正自启动硬件电路</li>
+          </ul>
+
+          <h3>三、核心技术与控制机制</h3>
+          <p><strong>姿态感知与解算</strong><br>
+          通过软件 I2C 协议读取 MPU6050 原始数据，结合卡尔曼滤波算法对陀螺仪与加速度计数据进行融合解算，输出高精度实时姿态角。</p>
+
+          <p><strong>三级闭环 PID 控制</strong><br>
+          搭建直立环 + 速度环 + 转向环三环 PID 控制架构：直立环保证小车动态平衡，速度环实现匀速行驶，转向环完成精准转向控制，三者协同保障小车稳定运行。</p>
+
+          <p><strong>智能感知控制</strong><br>
+          五路红外循迹模块采集路面信号，采用 PD 闭环控制实现高精度黑线循迹；HC-SR04 超声波实时检测前方障碍物，触发自动避障策略；蓝牙与 OLED 提供交互与状态显示。</p>
+
+          <h3>四、核心功能</h3>
+          <ul>
+            <li>自平衡控制：基于三环 PID 实现小车动态直立平衡，抗干扰能力强；</li>
+            <li>自主循迹：五路红外 + PD 控制，精准识别黑线轨迹，稳定沿迹行驶；</li>
+            <li>智能避障：超声波实时测距，自动绕行障碍物，无碰撞运行；</li>
+            <li>蓝牙遥控：手机 APP 远程控制小车启停、转向、调速；</li>
+            <li>状态显示：OLED 实时输出姿态角、运行模式、传感器数据；</li>
+            <li>安全保护：倒地自动停机，扶正后快速恢复平衡状态。</li>
+          </ul>
+
+          <h3>五、关键难点与解决方案</h3>
+          <p><strong>循迹精度低、行驶抖动</strong><br>
+          难点：传统开关控制循迹偏差大、响应迟钝；<br>
+          解决方案：采用 PD 闭环控制算法，优化响应速度与稳定性，循迹平滑度大幅提升。</p>
+
+          <p><strong>MPU6050 姿态解算零漂严重</strong><br>
+          难点：陀螺仪温漂、加速度计噪声导致姿态角漂移；<br>
+          解决方案：引入卡尔曼滤波融合多传感器数据，有效抑制零漂，提升平衡稳定性。</p>
+
+          <p><strong>多任务控制冲突</strong><br>
+          难点：平衡、循迹、避障多任务并行导致控制紊乱；<br>
+          解决方案：模块化任务调度，优先级分配核心控制任务，保证系统实时性。</p>
+
+          <h3>六、项目亮点</h3>
+          <ul>
+            <li>双库兼容开发：同时支持标准库与 HAL 库，适配不同开发场景；</li>
+            <li>多模式一体化：集自平衡、循迹、避障、遥控于一体；</li>
+            <li>高精度算法：卡尔曼滤波 + 三环 PID + PD 控制，控制精度高；</li>
+            <li>可视化交互：OLED + 蓝牙远程操控，人机交互友好；</li>
+            <li>高安全性：完善的硬件保护与软件容错机制。</li>
+          </ul>
+
+          <h3>七、应用场景</h3>
+          <p>本项目可应用于嵌入式运动控制教学实训、智能小车竞赛、科创 DIY 项目、自主移动机器人入门开发等场景，覆盖传感器驱动、滤波算法、PID 控制、无线通信等嵌入式核心技术点。</p>
+          </div>
+          <button class="summary-toggle" aria-expanded="false">项目介绍 ▾</button>
+        </div>
+      </article>
+    </section>
+
+    <section class="action-grid" aria-label="项目源码和演示视频">
+      <article class="action-card">
+        <div class="card-body">
+          <span class="card-kicker">RT-Thread 电池管理系统</span>
+          <h3>基于RT-Thread的多串锂电池管理系统(BMS)</h3>
+          <div class="button-row">
+            <a class="btn btn-source" href="#">即将上传</a>
+            <a class="btn btn-video" href="#">即将上传</a>
+          </div>
+        </div>
+      </article>
+      <article class="action-card">
+        <div class="card-body">
+          <span class="card-kicker">边缘 AI 智能健康监护</span>
+          <h3>边缘 AI 的低功耗智能健康监护穿戴设备</h3>
+          <div class="button-row">
+            <a class="btn btn-source" href="#">即将上传</a>
+            <a class="btn btn-video" href="#">即将上传</a>
+          </div>
+        </div>
+      </article>
+      <article class="action-card">
+        <div class="card-body">
+          <span class="card-kicker">Free RTOS智能天气时钟</span>
+          <h3>基于Free RTOS的智能天气时钟</h3>
+          <div class="button-row">
+            <a class="btn btn-source" href="https://github.com/laobanwang676-droid/Weather_Clock.git" target="_blank" rel="noopener noreferrer">源码</a>
+            <a class="btn btn-video" href="video.html?project=weather">演示视频</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="action-card">
+        <div class="card-body">
+          <span class="card-kicker">多模态两轮自平衡系统</span>
+          <h3>多模态两轮自平衡系统</h3>
+          <div class="button-row">
+            <a class="btn btn-source" href="https://github.com/laobanwang676-droid/Balance_Car.git" target="_blank" rel="noopener noreferrer">源码</a>
+            <a class="btn btn-video" href="video.html?project=balance">演示视频</a>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <footer>
+      <span>持续更新开源项目中。</span>
+    </footer>
+  </main>
+</body>
+</html>
