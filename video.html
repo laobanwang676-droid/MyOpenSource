@@ -6,13 +6,31 @@
   <title>项目演示视频</title>
   <style>
     :root {
-      --bg: #0d1320;
+      --bg: #f7fafc;
+      --text: #1e293b;
+      --muted: #64748b;
+      --line: rgba(0, 0, 0, 0.08);
+      --primary: #3b82f6;
+      --accent: #10b981;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.10);
+      --player-bg: #edf2f7;
+      --back-bg: rgba(0, 0, 0, 0.04);
+      --source-bg: #0f172a;
+      --source-text: #fff;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f172a;
       --text: #f7fbff;
-      --muted: #b9c4d6;
-      --line: rgba(255, 255, 255, 0.12);
+      --muted: #94a3b8;
+      --line: rgba(148, 163, 184, 0.12);
       --primary: #3b82f6;
       --accent: #19c6a5;
       --shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+      --player-bg: #050813;
+      --back-bg: rgba(255, 255, 255, 0.07);
+      --source-bg: #fff;
+      --source-text: #06111f;
     }
 
     * {
@@ -24,10 +42,8 @@
       min-height: 100vh;
       font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
       color: var(--text);
-      background:
-        radial-gradient(circle at 14% 12%, rgba(25, 198, 165, 0.18), transparent 30%),
-        radial-gradient(circle at 86% 4%, rgba(59, 130, 246, 0.22), transparent 32%),
-        linear-gradient(180deg, #0b1020 0%, var(--bg) 100%);
+      background: var(--bg);
+      transition: background 0.3s ease, color 0.3s ease;
     }
 
     a {
@@ -58,13 +74,13 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       color: var(--text);
-      background: rgba(255, 255, 255, 0.07);
+      background: var(--back-bg);
       transition: background 0.2s ease, transform 0.2s ease;
     }
 
     .back-link:hover {
       transform: translateY(-2px);
-      background: rgba(255, 255, 255, 0.12);
+      opacity: 0.8;
     }
 
     .brand {
@@ -94,7 +110,7 @@
       overflow: hidden;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #050813;
+      background: var(--player-bg);
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
@@ -177,8 +193,8 @@
     }
 
     .btn-source {
-      color: #06111f;
-      background: #fff;
+      color: var(--source-text);
+      background: var(--source-bg);
     }
 
     .btn-home {
@@ -209,7 +225,10 @@
   <main class="page">
     <nav class="nav">
       <a class="back-link" href="index.html">返回首页</a>
-      <a class="brand" href="index.html">果冻的开源网站</a>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <a class="brand" href="index.html">喜之郎的开源网站</a>
+        <button class="theme-toggle" id="themeToggle" aria-label="切换深色/浅色模式" style="background:none;border:1px solid var(--line);border-radius:6px;padding:5px 12px;cursor:pointer;font-size:0.85rem;font-weight:500;color:var(--text-secondary);transition:all 0.2s ease;">深色</button>
+      </div>
     </nav>
 
     <section class="intro" aria-labelledby="video-title">
@@ -260,6 +279,31 @@
     document.getElementById("video-title").textContent = project.title;
     document.getElementById("source-link").href = project.source;
     domesticLink.href = project.domestic;
+
+    // ===== 主题切换 =====
+    (function() {
+      const toggle = document.getElementById('themeToggle');
+      const html = document.documentElement;
+      const stored = localStorage.getItem('theme');
+      if (stored === 'dark') {
+        html.setAttribute('data-theme', 'dark');
+        if (toggle) toggle.textContent = '浅色';
+      }
+      if (toggle) {
+        toggle.addEventListener('click', function() {
+          const isDark = html.getAttribute('data-theme') === 'dark';
+          if (isDark) {
+            html.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'light');
+            toggle.textContent = '深色';
+          } else {
+            html.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+            toggle.textContent = '浅色';
+          }
+        });
+      }
+    })();
   </script>
 </body>
 </html>
