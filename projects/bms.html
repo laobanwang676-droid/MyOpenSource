@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BMS - 喜之郎的开源项目</title>
+  <style>
+    :root {
+      --bg: #f7fafc;
+      --bg-secondary: #edf2f7;
+      --bg-card: rgba(255, 255, 255, 0.85);
+      --text: #1e293b;
+      --text-secondary: #475569;
+      --muted: #64748b;
+      --line: rgba(0, 0, 0, 0.08);
+      --primary: #08409a;
+      --primary-dark: #2563eb;
+      --accent: #10b981;
+      --accent-dark: #059669;
+      --ink: #0f172a;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.08);
+      --nav-bg: rgba(247, 250, 252, 0.88);
+    }
+    [data-theme="dark"] {
+      --bg: #0b0f1a;
+      --bg-secondary: #111827;
+      --bg-card: rgba(30, 41, 59, 0.7);
+      --text: #e8edf5;
+      --text-secondary: #94a3b8;
+      --muted: #64748b;
+      --line: rgba(148, 163, 184, 0.12);
+      --primary: #1661bd;
+      --primary-dark: #205dbf;
+      --accent: #34d399;
+      --accent-dark: #10b981;
+      --ink: #f1f5f9;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+      --nav-bg: rgba(11, 15, 26, 0.85);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh;
+      font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      color: var(--text); background: var(--bg);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    .navbar {
+      position: sticky; top: 0; z-index: 100; padding: 0 24px;
+      background: var(--nav-bg); backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+    .navbar-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      width: min(1200px, 100%); margin: 0 auto; height: 62px;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 1rem; color: var(--ink); }
+    .nav-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #000; }
+    [data-theme="dark"] .nav-dot { background: #fff; }
+    .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; margin: 0; padding: 0; }
+    .nav-links li a, .nav-links li button {
+      display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px;
+      border-radius: 8px; font-size: 0.88rem; font-weight: 500;
+      color: var(--text-secondary); background: transparent; border: none; cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .nav-links li a:hover, .nav-links li button:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+    .theme-toggle {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 52px; height: 34px; padding: 0 12px; border-radius: 8px;
+      border: 1px solid var(--line); background: transparent; color: var(--text-secondary);
+      font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease;
+    }
+    .theme-toggle:hover { color: var(--text); background: var(--bg-secondary); }
+
+    .page {
+      width: min(900px, calc(100% - 36px)); margin: 0 auto; padding: 40px 0 56px;
+    }
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px; margin-bottom: 32px;
+      color: var(--text-secondary); font-size: 0.9rem; font-weight: 500; transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--primary); }
+    h1 {
+      margin: 0 0 12px; color: var(--ink); font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 800; line-height: 1.3; letter-spacing: 0;
+    }
+    .subtitle {
+      margin: 0 0 32px; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7;
+    }
+    .content {
+      color: var(--text-secondary); font-size: 0.93rem; line-height: 1.85;
+    }
+    .content h2 {
+      margin: 32px 0 10px; color: var(--ink); font-size: 1.15rem; font-weight: 700; opacity: 0.9;
+    }
+    .content h2:first-child { margin-top: 0; }
+    .content p { margin: 0 0 12px; }
+    .content ul { margin: 4px 0 14px; padding-left: 20px; }
+    .content ul li { margin-bottom: 4px; }
+    .content strong { color: var(--text); }
+    [data-theme="dark"] .content strong { color: #e2e8f0; }
+    [data-theme="dark"] .content { color: #cbd5e1; }
+    [data-theme="dark"] .content h2 { color: #e2e8f0; }
+
+    .actions {
+      display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; padding-top: 28px;
+      border-top: 1px solid var(--line);
+    }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 6px; padding: 10px 22px;
+      border-radius: 8px; border: 1px solid var(--line); background: var(--bg-secondary);
+      color: var(--text); font-size: 0.88rem; font-weight: 600; transition: all 0.2s ease;
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-filled {
+      display: inline-flex; align-items: center; gap: 6px; padding: 10px 22px;
+      border-radius: 8px; border: none;
+      background: linear-gradient(135deg, var(--primary-dark), var(--accent-dark));
+      color: #fff; font-size: 0.88rem; font-weight: 600; transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(37,99,235,0.18);
+    }
+    .btn-filled:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(37,99,235,0.28); }
+
+    footer { padding: 36px 0 0; color: var(--muted); font-size: 0.85rem; text-align: center; border-top: 1px solid var(--line); margin-top: 40px; }
+
+    @media (max-width: 560px) {
+      .navbar-inner { height: 54px; }
+      .nav-links li a, .nav-links li button { padding: 6px 8px; font-size: 0.78rem; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="nav-brand" href="../index.html">
+        <span class="nav-dot"></span><span class="nav-dot"></span><span class="nav-dot"></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="../index.html">首页</a></li>
+        <li><a href="../index.html#projects">项目</a></li>
+        <li><button class="theme-toggle" id="themeToggle" aria-label="切换深色/浅色模式">深色</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page">
+    <a class="back-link" href="../index.html">← 返回首页</a>
+    <h1>基于RT-Thread的多串锂电池管理系统(BMS)</h1>
+    <p class="subtitle">以 STM32F103C8T6 为主控，搭配 BQ76920 电池前端芯片，基于 RT-Thread 实时操作系统开发。采用 ASW-RTE-BSW 三层解耦架构，集成高精度 SOC 估算、硬件级快速保护、被动均衡控制与 FinSH 命令行交互。</p>
+
+    <div class="content">
+      <h2>一、项目概述</h2>
+      <p>以 STM32F103C8T6 为主控，搭配 BQ76920 电池前端芯片，基于 RT-Thread 实时操作系统开发。采用 ASW-RTE-BSW 三层解耦架构，集成高精度 SOC 估算（OCV + 安时积分 + 温度补偿）、硬件级快速保护、被动均衡控制与 FinSH 命令行交互。搭建 CMake + ARM GCC 构建体系替代 Keil，集成 OpenOCD、ST-Link 与 Cortex-Debug 实现编译烧录与在线调试；同时集成 CAN 通信，支持 BMS 状态上报与电芯数据请求/响应。</p>
+
+      <h2>二、硬件与技术栈</h2>
+      <p><strong>核心硬件</strong></p>
+      <ul>
+        <li><strong>主控芯片：</strong>STM32F103C8T6（ARM Cortex-M3 内核，高性价比工业级主控）</li>
+        <li><strong>电池前端芯片：</strong>BQ76920（多节锂电池电压采集、硬件保护核心芯片）</li>
+        <li><strong>功能电路：</strong>锂电池被动均衡电路、硬件过流 / 短路保护电路</li>
+        <li><strong>交互接口：</strong>UART 串口（FinSH 命令行调试、数据交互）、CAN 总线（BMS 数据通信）</li>
+      </ul>
+      <p><strong>核心技术</strong></p>
+      <ul>
+        <li>操作系统：RT-Thread（多线程调度、IPC 进程间通信）</li>
+        <li>开发库：STM32 标准库</li>
+        <li>构建体系：CMake + ARM GCC 交叉编译工具链</li>
+        <li>烧录调试：OpenOCD + ST-Link + VS Code Cortex-Debug</li>
+        <li>通信协议：I2C（BQ76920）、UART（FinSH）、CAN（状态上报）</li>
+        <li>核心机制：互斥锁、信号量、软件定时器、环形缓冲区</li>
+      </ul>
+
+      <h2>三、系统架构与核心机制</h2>
+      <p>ASW-RTE-BSW 三层架构实现完全解耦。系统拆解为采集、保护、分析、均衡、信息交互 5 个独立线程，通过优先级调度并行运行；互斥锁解决 I2C 总线竞态，信号量实现线程同步与中断唤醒；BQ76920 硬件特性 + 外部中断实现毫秒级断电保护；软件定时器精准控制被动均衡时序，提升均衡效率。</p>
+
+      <h2>四、核心功能</h2>
+      <ul>
+        <li>多节锂电状态采集：BQ76920 实时采集单体电压、温度、总电流等参数；</li>
+        <li>高精度 SOC 估算：OCV 校准初始电量，安时积分 + 温度补偿实时计算剩余电量；</li>
+        <li>硬件级安全保护：毫秒级响应短路、过流、过压、欠压，快速断电保护；</li>
+        <li>智能被动均衡：软件定时器控制均衡时序，自动修复单体电压差异；</li>
+        <li>FinSH 命令交互：串口命令行实时查询电池状态、配置保护参数；</li>
+        <li>CAN 通信交互：支持 BMS 状态上报与电芯电压、温度数据请求/响应；</li>
+        <li>ASW-RTE-BSW 三层解耦架构 + RT-Thread 多线程调度，模块化程度高、实时性强；</li>
+        <li>OCV + 安时积分 + 温度补偿融合算法，SOC 估算精度高、稳定性强；</li>
+        <li>CMake + ARM GCC + OpenOCD + Cortex-Debug 开源工具链，替代 Keil 实现全流程开发。</li>
+      </ul>
+
+      <h2>五、关键难点与解决方案</h2>
+      <p><strong>Keil 工程依赖与调试流程不开放</strong> — 搭建 CMake + ARM GCC 构建体系，配合 OpenOCD、ST-Link 与 Cortex-Debug 实现命令行编译、烧录与在线调试，替代 Keil 完成开发闭环。</p>
+      <p><strong>外设并发与 CPU 开销过高</strong> — 设计硬件中断 + 环形缓冲区 + 信号量机制，线程阻塞等待信号量唤醒，消除 CPU 轮询开销。</p>
+      <p><strong>多线程数据竞态与资源冲突</strong> — 采用互斥锁保护共享资源，保证多线程并发场景下的数据安全性与业务逻辑稳定。</p>
+
+      <h2>六、应用场景</h2>
+      <p>电动工具电池包、便携式储能电源、工业锂电模组、小型新能源设备、锂电池教学实训平台。</p>
+    </div>
+
+    <div class="actions">
+      <a class="btn-outline" href="https://github.com/laobanwang676-droid/bms_rtthread.git" target="_blank" rel="noopener noreferrer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> 查看源码</a>
+      <a class="btn-filled" href="../video.html?project=bms">▶ 演示视频</a>
+    </div>
+
+    <footer><span>持续更新开源项目中。</span></footer>
+  </main>
+
+  <script>
+    (function() {
+      const toggle = document.getElementById('themeToggle');
+      const html = document.documentElement;
+      const stored = localStorage.getItem('theme');
+      if (stored === 'dark') { html.setAttribute('data-theme', 'dark'); if (toggle) toggle.textContent = '浅色'; }
+      if (toggle) {
+        toggle.addEventListener('click', function() {
+          const isDark = html.getAttribute('data-theme') === 'dark';
+          if (isDark) { html.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); toggle.textContent = '深色'; }
+          else { html.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); toggle.textContent = '浅色'; }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>智能天气时钟 - 喜之郎的开源项目</title>
+  <style>
+    :root {
+      --bg: #f7fafc; --bg-secondary: #edf2f7; --bg-card: rgba(255,255,255,0.85); --text: #1e293b;
+      --text-secondary: #475569; --muted: #64748b; --line: rgba(0,0,0,0.08);
+      --primary: #08409a; --primary-dark: #2563eb; --accent: #10b981; --accent-dark: #059669;
+      --ink: #0f172a; --shadow: 0 18px 50px rgba(0,0,0,0.08); --nav-bg: rgba(247,250,252,0.88);
+    }
+    [data-theme="dark"] {
+      --bg: #0b0f1a; --bg-secondary: #111827; --bg-card: rgba(30,41,59,0.7); --text: #e8edf5;
+      --text-secondary: #94a3b8; --muted: #64748b; --line: rgba(148,163,184,0.12);
+      --primary: #1661bd; --primary-dark: #205dbf; --accent: #34d399; --accent-dark: #10b981;
+      --ink: #f1f5f9; --shadow: 0 18px 50px rgba(0,0,0,0.35); --nav-bg: rgba(11,15,26,0.85);
+    }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100vh; font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif; color:var(--text); background:var(--bg); transition:background 0.3s,color 0.3s; }
+    a { color:inherit; text-decoration:none; }
+    .navbar { position:sticky; top:0; z-index:100; padding:0 24px; background:var(--nav-bg); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); border-bottom:1px solid var(--line); }
+    .navbar-inner { display:flex; align-items:center; justify-content:space-between; width:min(1200px,100%); margin:0 auto; height:62px; }
+    .nav-brand { display:flex; align-items:center; gap:6px; font-weight:800; font-size:1rem; color:var(--ink); }
+    .nav-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #000; }
+    [data-theme="dark"] .nav-dot { background: #fff; }
+    .nav-links { display:flex; align-items:center; gap:6px; list-style:none; margin:0; padding:0; }
+    .nav-links li a, .nav-links li button { display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:8px; font-size:0.88rem; font-weight:500; color:var(--text-secondary); background:transparent; border:none; cursor:pointer; transition:all 0.2s; }
+    .nav-links li a:hover, .nav-links li button:hover { color:var(--text); background:rgba(255,255,255,0.06); }
+    .theme-toggle { display:inline-flex; align-items:center; justify-content:center; min-width:52px; height:34px; padding:0 12px; border-radius:8px; border:1px solid var(--line); background:transparent; color:var(--text-secondary); font-size:0.85rem; font-weight:500; cursor:pointer; transition:all 0.2s; }
+    .theme-toggle:hover { color:var(--text); background:var(--bg-secondary); }
+    .page { width:min(900px,calc(100% - 36px)); margin:0 auto; padding:40px 0 56px; }
+    .back-link { display:inline-flex; align-items:center; gap:6px; margin-bottom:32px; color:var(--text-secondary); font-size:0.9rem; font-weight:500; transition:color 0.2s; }
+    .back-link:hover { color:var(--primary); }
+    h1 { margin:0 0 12px; color:var(--ink); font-size:clamp(1.5rem,3vw,2rem); font-weight:800; line-height:1.3; }
+    .subtitle { margin:0 0 32px; color:var(--text-secondary); font-size:0.95rem; line-height:1.7; }
+    .content { color:var(--text-secondary); font-size:0.93rem; line-height:1.85; }
+    .content h2 { margin:32px 0 10px; color:var(--ink); font-size:1.15rem; font-weight:700; opacity:0.9; }
+    .content h2:first-child { margin-top:0; }
+    .content p { margin:0 0 12px; }
+    .content ul { margin:4px 0 14px; padding-left:20px; }
+    .content ul li { margin-bottom:4px; }
+    .content strong { color:var(--text); }
+    [data-theme="dark"] .content strong { color:#e2e8f0; }
+    [data-theme="dark"] .content { color:#cbd5e1; }
+    [data-theme="dark"] .content h2 { color:#e2e8f0; }
+    .actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:36px; padding-top:28px; border-top:1px solid var(--line); }
+    .btn-outline { display:inline-flex; align-items:center; gap:6px; padding:10px 22px; border-radius:8px; border:1px solid var(--line); background:var(--bg-secondary); color:var(--text); font-size:0.88rem; font-weight:600; transition:all 0.2s; }
+    .btn-outline:hover { border-color:var(--primary); color:var(--primary); }
+    .btn-filled { display:inline-flex; align-items:center; gap:6px; padding:10px 22px; border-radius:8px; border:none; background:linear-gradient(135deg,var(--primary-dark),var(--accent-dark)); color:#fff; font-size:0.88rem; font-weight:600; transition:all 0.2s; box-shadow:0 4px 14px rgba(37,99,235,0.18); }
+    .btn-filled:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(37,99,235,0.28); }
+    footer { padding:36px 0 0; color:var(--muted); font-size:0.85rem; text-align:center; border-top:1px solid var(--line); margin-top:40px; }
+    @media (max-width:560px) { .navbar-inner{height:54px;} .nav-links li a,.nav-links li button{padding:6px 8px;font-size:0.78rem;} }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="nav-brand" href="../index.html"><span class="nav-dot"></span><span class="nav-dot"></span><span class="nav-dot"></span></a>
+      <ul class="nav-links">
+        <li><a href="../index.html">首页</a></li>
+        <li><a href="../index.html#projects">项目</a></li>
+        <li><button class="theme-toggle" id="themeToggle" aria-label="切换深色/浅色模式">深色</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page">
+    <a class="back-link" href="../index.html">← 返回首页</a>
+    <h1>基于FreeRTOS的智能天气时钟</h1>
+    <p class="subtitle">以 STM32F407VET6 为主控核心，搭载 FreeRTOS 实时操作系统，兼容标准库与 HAL 库双版本开发。深度融合环境感知、网络数据交互、语音智能交互、实时报警与 LVGL 可视化人机交互。</p>
+
+    <div class="content">
+      <h2>一、项目概述</h2>
+      <p>以 STM32F407VET6 为主控核心，搭载 FreeRTOS 实时操作系统，兼容标准库与 HAL 库双版本开发。深度融合环境感知、网络数据交互、语音智能交互、实时报警与 LVGL 可视化人机交互，实现从数据采集、网络通信到智能响应、本地显示的全流程闭环。</p>
+
+      <h2>二、硬件与技术栈</h2>
+      <p><strong>核心硬件</strong></p>
+      <ul>
+        <li><strong>主控芯片：</strong>STM32F407VET6（高性能 ARM Cortex-M4 内核）</li>
+        <li><strong>通信模块：</strong>ESP32C3 模块（WiFi 联网、网络数据获取）</li>
+        <li><strong>传感模块：</strong>AHT20 I2C 接口温湿度传感器</li>
+        <li><strong>显示模块：</strong>ST7789 LCD 显示屏（SPI 接口 + DMA 传输）</li>
+        <li><strong>交互模块：</strong>SU03T语音识别 / LU6288播报模块、物理按键</li>
+      </ul>
+      <p><strong>核心技术</strong></p>
+      <ul>
+        <li>操作系统：FreeRTOS（任务调度、进程间通信）</li>
+        <li>驱动框架：LVGL 嵌入式图形库</li>
+        <li>通信协议：UART 串口、I2C、SPI、DMA</li>
+        <li>软件兼容：STM32 标准库 / HAL 库双版本支持</li>
+      </ul>
+
+      <h2>三、系统架构与核心机制</h2>
+      <p>FreeRTOS 多任务架构，通过队列与信号量实现数据同步与资源互斥访问。UART 串口与 ESP32 通信，串口中断接收 + 指令校验确保天气数据精准获取；I2C 协议采集温湿度数据；LVGL 驱动 LCD，SPI + DMA 提升屏幕刷新效率；支持按键配网、语音识别、阈值报警等智能化交互。</p>
+
+      <h2>四、核心功能</h2>
+      <ul>
+        <li>智能环境监测：实时采集温湿度，支持自定义阈值声光报警；</li>
+        <li>WiFi 网络交互：按键快速配网，获取公网天气与网络标准时间；</li>
+        <li>语音智能交互：语音指令识别，播报温湿度、天气、网络时间；</li>
+        <li>LVGL 人机交互：可视化界面展示环境数据、网络状态与报警信息；</li>
+        <li>高可靠通信：串口指令校验与数据容错，保障模块间通信稳定；</li>
+        <li>双库兼容：同时支持标准库与 HAL 库，适配不同开发与移植需求；</li>
+        <li>高效显示：SPI + DMA + LVGL 组合，实现高帧率低功耗界面渲染。</li>
+      </ul>
+
+      <h2>五、关键难点与解决方案</h2>
+      <p><strong>LCD 多任务数据显示竞态</strong> — FreeRTOS 队列统一管理显示数据，避免多任务资源竞争，保证显示流畅与数据准确。</p>
+      <p><strong>串口数据接收可靠性</strong> — 串口中断接收搭配指令校验机制，确保网络数据解析精准。</p>
+      <p><strong>多外设资源冲突</strong> — 信号量实现资源互斥访问，FreeRTOS 优先级调度保障核心任务优先执行。</p>
+
+      <h2>六、应用场景</h2>
+      <p>智能家居环境监测、室内智能终端、嵌入式教学实训、工业环境监控节点。</p>
+    </div>
+
+    <div class="actions">
+      <a class="btn-outline" href="https://github.com/laobanwang676-droid/Weather_Clock.git" target="_blank" rel="noopener noreferrer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> 查看源码</a>
+      <a class="btn-filled" href="../video.html?project=weather">▶ 演示视频</a>
+    </div>
+
+    <footer><span>持续更新开源项目中。</span></footer>
+  </main>
+
+  <script>
+    (function(){const t=document.getElementById('themeToggle'),h=document.documentElement;if(localStorage.getItem('theme')==='dark'){h.setAttribute('data-theme','dark');if(t)t.textContent='浅色';}if(t){t.addEventListener('click',function(){const d=h.getAttribute('data-theme')==='dark';if(d){h.removeAttribute('data-theme');localStorage.setItem('theme','light');t.textContent='深色';}else{h.setAttribute('data-theme','dark');localStorage.setItem('theme','dark');t.textContent='浅色';}});}})();
+  </script>
+</body>
+</html>
