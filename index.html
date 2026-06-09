@@ -321,9 +321,6 @@
       color: var(--text-secondary);
       font-size: 0.88rem;
       line-height: 1.72;
-      display: -webkit-box;
-      -webkit-line-clamp: 5;
-      -webkit-box-orient: vertical;
       overflow: hidden;
     }
 
@@ -521,6 +518,21 @@
     .github-notice strong {
       color: var(--text);
       font-weight: 800;
+    }
+
+    /* ===== 访问计数器 ===== */
+    .visit-counter {
+      margin-top: 12px;
+      padding: 6px 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 500;
+      text-align: left;
+      user-select: none;
+    }
+    .visit-counter span {
+      font-weight: 700;
+      color: var(--primary);
     }
 
     /* ===== Footer ===== */
@@ -780,6 +792,9 @@
 
     <footer>
       <span>持续更新开源项目中。</span>
+      <div class="visit-counter">
+        本站总访问量 <span id="busuanzi_value_site_pv">0</span> 次
+      </div>
     </footer>
   </main>
 
@@ -906,5 +921,7 @@
       });
     })();
   </script>
+  <!-- 不蒜子访问计数器 -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </body>
 </html>
