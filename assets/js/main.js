@@ -171,10 +171,32 @@
     });
   }
 
+  function setupConfirmLinks() {
+    document.addEventListener('click', function (event) {
+      var link = event.target.closest('[data-confirm]');
+      if (!link) return;
+
+      event.preventDefault();
+      var message = link.getAttribute('data-confirm');
+      if (!confirm(message)) return;
+
+      var href = link.getAttribute('href');
+      var target = link.getAttribute('target');
+      if (!href || href === '#') return;
+
+      if (target === '_blank') {
+        window.open(href, '_blank', 'noopener');
+      } else {
+        window.location.href = href;
+      }
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     setupThemeToggle();
     setupContactModal();
     setupCopyButtons();
+    setupConfirmLinks();
     setupNavDropdowns();
   });
 })();
