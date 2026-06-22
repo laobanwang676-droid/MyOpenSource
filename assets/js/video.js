@@ -32,6 +32,15 @@ const videoProjects = {
   document.title = project.title + ' - 项目演示视频';
 
   if (title) title.textContent = project.title;
-  if (sourceLink) sourceLink.href = project.source;
+  if (sourceLink) {
+    sourceLink.href = project.source;
+    if (project.source === '#') {
+      sourceLink.removeAttribute('target');
+      sourceLink.addEventListener('click', function (e) {
+        e.preventDefault();
+        alert('源码即将上传，敬请期待！');
+      });
+    }
+  }
   if (domesticLink) domesticLink.href = project.domestic;
 })();
