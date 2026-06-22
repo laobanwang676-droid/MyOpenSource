@@ -558,21 +558,6 @@ footer {
   font-weight: 800;
 }
 
-.visit-counter {
-  padding: 6px 0;
-  margin-top: 12px;
-  color: var(--muted);
-  font-size: 0.82rem;
-  font-weight: 500;
-  text-align: left;
-  user-select: none;
-}
-
-.visit-counter span {
-  color: var(--primary);
-  font-weight: 700;
-}
-
 .modal-overlay {
   position: fixed;
   inset: 0;
