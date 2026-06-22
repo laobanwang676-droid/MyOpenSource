@@ -13,6 +13,11 @@ const videoProjects = {
     title: '多模态两轮自平衡系统',
     source: 'https://github.com/laobanwang676-droid/Balance_Car.git',
     domestic: 'https://live.csdn.net/v/527845'
+  },
+  health: {
+    title: '边缘 AI 的低功耗智能健康监护穿戴设备',
+    source: '#',
+    domestic: 'https://live.csdn.net/v/531964'
   }
 };
 
