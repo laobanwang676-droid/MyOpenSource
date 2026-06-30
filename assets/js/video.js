@@ -2,8 +2,7 @@ const videoProjects = {
   bms: {
     title: '移动式动力电池控制单元(BMS)',
     source: 'https://github.com/laobanwang676-droid/bms_rtthread.git',
-    domestic: 'https://live.csdn.net/v/529526',
-    sourceConfirm: '当前源码为旧版本，新版本即将上传'
+    domestic: 'https://live.csdn.net/v/533329'
   },
   weather: {
     title: '嵌入式智能气象语音显示系统',
